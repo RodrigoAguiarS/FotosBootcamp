@@ -1,6 +1,8 @@
 package com.rodrigo.fotosbootcamp
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +33,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    private fun pickImageFromGaley() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICk_CODE)
+    }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode){
             PERMISSION_CODE -> {
@@ -44,6 +50,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
         //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICk_CODE){
+            image_view.setImageURI(data?.data)
+        }
     }
     companion object{
         private val PERMISSION_CODE = 1000
