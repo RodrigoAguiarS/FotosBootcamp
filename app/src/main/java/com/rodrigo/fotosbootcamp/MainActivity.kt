@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         private val PERMISSION_CODE_IMAGE_PICK = 1000
         private val IMAGE_PICK_CODE = 1001
+        private val PERMISSION_CODE_CAMERA_CAPTURE = 2000
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,14 +32,36 @@ class MainActivity : AppCompatActivity() {
                 else{
                     pickImageFromGaley()
                 }
-
             }
             else{
                 pickImageFromGaley()
-
             }
         }
+        open_camera_button.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                if (checkSelfPermission(Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_DENIED ||
+                        checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_DENIED){
+                    val permission = arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestPermissions(permission, PERMISSION_CODE_CAMERA_CAPTURE)
+                }
+                else{
+                    openCamera()
+
+                }
+            }
+            else{
+                openCamera()
+            }
+
+        }
     }
+
+    private fun openCamera() {
+        TODO("Not yet implemented")
+    }
+
     private fun pickImageFromGaley() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -51,6 +75,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 else{
                     Toast.makeText(this, "Permissão Negada", Toast.LENGTH_SHORT).show()
+                }
+            }
+            PERMISSION_CODE_CAMERA_CAPTURE -> {
+               if (grantResults.size > 1 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                   openCamera()
                 }
             }
         }
